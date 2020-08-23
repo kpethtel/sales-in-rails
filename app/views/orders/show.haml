@@ -1,0 +1,49 @@
+%h1 Order
+%table{ class: "table" }
+  %tr
+    %th Number
+    %td= @order.number
+  %tr
+    %th User name
+    %td= @order.user&.name
+  %tr
+    %th User email
+    %td= @order.user&.email
+  %tr
+    %th Items
+    %td
+      %table{ class: "table" }
+        %th Product name
+        %th SKU
+        %th MSRP
+        %th Cost
+        %th Quantity ordered
+        %th Price
+        %th State
+        - @product_items.each do |item|
+          .slide
+            %tr
+              %td= item.source&.name
+              %td= item.source&.sku
+              %td= item.source&.msrp
+              %td= item.source&.cost
+              %td= item.quantity
+              %td= item.price
+              %td= item.state
+  %tr
+    %th Payments
+    %td
+      %table{ class: "table" }
+        %th Amount
+        %th State
+        %th Type
+        %th Completed at
+        %th Refunded at
+        - @order.payments.each do |payment|
+          .slide
+            %tr
+              %td= payment.amount
+              %td= payment.state
+              %td= payment.payment_type
+              %td= payment.completed_at
+              %td= payment.refunded_at
