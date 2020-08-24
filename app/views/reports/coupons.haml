@@ -1,0 +1,21 @@
+%h2 Select coupon
+%h3 View order data for customers after using the selected coupon
+%select{ id: 'couponType', onChange: "selectReportType()" }
+  %option{ selected: !@coupon_name, disabled: true, hidden: true } Select Coupon
+  - @coupons.each do |coupon|
+    .slide
+      %option{ value: coupon.id, selected: @coupon_name == coupon.name }
+        = coupon.name
+
+- if @orders
+  %table{class: 'table'}
+    %tr
+      %th User email
+      %th Number of orders
+      %th Revenue
+    - @orders.each do |order|
+      .slide
+        %tr
+          %td= order['user_email']
+          %td= order['count']
+          %td= number_to_currency(order['revenue'])

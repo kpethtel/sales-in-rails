@@ -1,0 +1,21 @@
+%h2 Select dates
+%h3 View all products sold in date range
+%form
+  %label Start date
+  %input{type: "date", id: "salesStartDate"}
+  %label End date
+  %input{type: "date", id: "salesEndDate"}
+  %input{type: "submit", value: "Submit", onClick: "processDates(event)"}
+%br
+- if @order_items
+  %table{class: 'table'}
+    %tr
+      %th Product name
+      %th Number sold
+      %th Total revenue
+    - @order_items.each do |item|
+      .slide
+        %tr
+          %th= item['source_name']
+          %th= item['total_sold']
+          %th= number_to_currency(item['revenue'])
