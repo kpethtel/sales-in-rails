@@ -1,4 +1,3 @@
-require 'pry'
 class OrdersController < ApplicationController
 
   def index
@@ -12,8 +11,7 @@ class OrdersController < ApplicationController
 
   private
   def order
-    @order ||=
-      Order.includes(:user, :payments, order_items: [:source]).find_by!(number: permitted_params[:number])
+    @order ||= Order.includes(:user, :payments, order_items: [:source]).find_by!(number: permitted_params[:number])
   end
 
   def orders

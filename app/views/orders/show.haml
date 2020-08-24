@@ -25,8 +25,8 @@
             %tr
               %td= item.source&.name
               %td= item.source&.sku
-              %td= item.source&.msrp
-              %td= item.source&.cost
+              %td= number_to_currency(item.source&.msrp)
+              %td= number_to_currency(item.source&.cost)
               %td= item.quantity
               %td= item.price
               %td= item.state
@@ -42,7 +42,7 @@
         - @order.payments.each do |payment|
           .slide
             %tr
-              %td= payment.amount
+              %td= number_to_currency(payment.amount)
               %td= payment.state
               %td= payment.payment_type
               %td= payment.completed_at
