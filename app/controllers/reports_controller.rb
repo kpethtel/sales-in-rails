@@ -57,6 +57,7 @@ order_id in (#{order_ids}) and state = 'sold' group by source_id"
     @order_items.each do |record|
       record['source_name'] = Product.find(record['source_id'])&.name
     end
+    @order_items.sort_by! { |item| item['source_name'] }
   end
 
   QUERY_PARAMS = %i[coupon_name start end]
