@@ -29,6 +29,9 @@ class ReportsController < ApplicationController
     @end_date ||= permitted_params[:end]&.to_date
   end
 
+  # if i had more time, i would consider extracting these queries into service objects, which would
+  # allow for better rspec testing. but given the time constraints of this project and the complexity
+  # of setting up data for testing database interactions, i decided to keep this simple
   def set_coupon_data
     coupon_id = all_coupons.find_by!(name: coupon_name).id
     coupon_order_ids = OrderItem.select(:order_id).where(source_type: 'Coupon', source_id: coupon_id)
@@ -52,7 +55,7 @@ class ReportsController < ApplicationController
 order_id in (#{order_ids}) and state = 'sold' group by source_id"
     @order_items = ActiveRecord::Base.connection.execute(query)
     @order_items.each do |record|
-      record['source_name'] = Product.find(record['source_id']).name
+      record['source_name'] = Product.find(record['source_id'])&.name
     end
   end
 
