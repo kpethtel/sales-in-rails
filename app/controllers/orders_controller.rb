@@ -5,13 +5,16 @@ class OrdersController < ApplicationController
   end
 
   def show
-    order
+    if order.nil?
+      flash.alert = 'Invalid order number'
+      return redirect_to orders_url
+    end
     product_items
   end
 
   private
   def order
-    @order ||= Order.includes(:user, :payments, order_items: [:source]).find_by!(number: permitted_params[:number])
+    @order ||= Order.includes(:user, :payments, order_items: [:source]).find_by(number: permitted_params[:number])
   end
 
   def orders

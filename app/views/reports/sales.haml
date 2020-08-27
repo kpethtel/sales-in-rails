@@ -7,6 +7,12 @@
   %input{type: "date", id: "salesEndDate"}
   %input{type: "submit", value: "Submit", onClick: "processDates(event)"}
 %br
+- if flash.any?
+  - flash.each do |_, msg|
+    %div{class: 'alert alert-danger'}
+      = msg
+- if @start_date && @end_date
+  %h3= "Orders from #{@start_date.strftime('%_m/%-d/%Y')} and #{@end_date.strftime('%_m/%-d/%Y')}"
 - if @order_items
   %table{class: 'table'}
     %tr

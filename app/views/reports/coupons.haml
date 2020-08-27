@@ -2,11 +2,14 @@
 %h3 View order data for customers after using the selected coupon
 %select{ id: 'couponType', onChange: "selectReportType()" }
   %option{ selected: !@coupon_name, disabled: true, hidden: true } Select Coupon
-  - @coupons.each do |coupon|
+  - @all_coupons.each do |coupon|
     .slide
       %option{ value: coupon.id, selected: @coupon_name == coupon.name }
         = coupon.name
-
+- if flash.any?
+  - flash.each do |_, msg|
+    %div{class: 'alert alert-danger'}
+      = msg
 - if @orders
   %table{class: 'table'}
     %tr

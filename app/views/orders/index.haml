@@ -4,6 +4,10 @@
     %th Name
     %th State
     %th User email
+  - if flash.any?
+    - flash.each do |_, msg|
+      %div{class: 'alert alert-danger'}
+        = msg
   - @orders.each do |order|
     .slide
       %tr
