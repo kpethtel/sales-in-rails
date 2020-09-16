@@ -53,29 +53,26 @@ class ReportsController < ApplicationController
     coupon_id = all_coupons.find_by(name: coupon_name)&.id
     return unless coupon_id
     coupon_order_ids = OrderItem.select(:order_id).where(source_type: 'Coupon', source_id: coupon_id)
-    coupon_orders =  Order.select('user_id, building_at').where("orders.id in (?)", coupon_order_ids)
-    order_aggregates = coupon_orders.map do |order|
-      Order.select("user_id, count(*) as count, sum(total) as revenue").
-        where(user_id: order['user_id']).where("building_at > ?", order['building_at'])
-    end
-    @orders = order_aggregates.map do |order|
-      order_details = order.as_json.first
-      order_details['user_email'] = User.find(order_details['user_id'])&.email
-      order_details
-    end
+    coupon_orders =  Order.select('user_id, building_at').where('orders.id in (?)', coupon_order_ids)
+    @orders = coupon_orders.map do |order|
+      Order.left_joins(:user).select('user_id, count(*) as count, sum(total) as revenue, users.email as user_email').
+        where(user_id: order['user_id']).where('building_at > ?', order['building_at'])
+    end.flatten
   end
 
   def set_sales_data
     return if start_date > end_date
-    orders = Order.select('id').where("building_at between ? and ?", start_date, end_date).where.not(state: 'canceled')
+    orders = Order.select('id').where('building_at between ? and ?', start_date, end_date).where.not(state: 'canceled')
     order_ids = orders.pluck(:id).join(', ')
-    query = "select source_id, sum(quantity) as total_sold, sum(price * quantity) as revenue from order_items where \
-order_id in (#{order_ids}) and state = 'sold' group by source_id"
+    query = %{
+      SELECT source_id, sum(quantity) AS total_sold, sum(price * quantity) AS revenue, products.name AS source_name
+      FROM order_items
+      LEFT JOIN products ON order_items.source_id = products.id
+      WHERE order_id IN (#{order_ids}) AND state = 'sold' AND source_type = 'Product'
+      GROUP BY source_id
+      ORDER BY source_name
+    }
     @order_items = ActiveRecord::Base.connection.execute(query)
-    @order_items.each do |record|
-      record['source_name'] = Product.find(record['source_id'])&.name
-    end
-    @order_items.sort_by! { |item| item['source_name'] }
   end
 
   QUERY_PARAMS = %i[coupon_name start end]
